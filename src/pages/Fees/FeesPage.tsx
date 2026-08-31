@@ -290,3 +290,4 @@ export const FeesPage: React.FC = () => {
     </div>
   );
 };
+// Enhanced fee collection reports
