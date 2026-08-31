@@ -119,6 +119,13 @@ export const StudentsListPage: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
+  const hasActiveFilters = searchQuery.trim() !== '' || statusFilter !== 'All';
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('All');
+  };
+
   const getStatusBadgeVariant = (status: StudentStatus) => {
     switch (status) {
       case 'Active': return 'success';
@@ -168,6 +175,21 @@ export const StudentsListPage: React.FC = () => {
         >
           <Plus className="w-4 h-4" /> Enroll Student
         </button>
+      </div>
+
+      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+        <span>
+          Showing {filteredStudents.length} of {students.length} student{students.length !== 1 ? 's' : ''}
+        </span>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
 
       {/* Main Table */}
