@@ -313,3 +313,4 @@ export const EnquiryDetailPage: React.FC = () => {
     </div>
   );
 };
+// Improved enquiry status workflow
