@@ -70,15 +70,26 @@ export const FollowUpsPage: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const filteredFollowUps = followUps.filter(f => {
-    const matchesSearch =
-      f.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      f.purpose.toLowerCase().includes(searchQuery.toLowerCase());
+  const followUpStatusPriority: Record<FollowUpStatus, number> = {
+    Overdue: 0,
+    Upcoming: 1,
+    Completed: 2
+  };
 
-    const matchesStatus = statusFilter === 'All' || f.status === statusFilter;
+  const filteredFollowUps = followUps
+    .filter(f => {
+      const matchesSearch =
+        f.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        f.purpose.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch && matchesStatus;
-  });
+      const matchesStatus = statusFilter === 'All' || f.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    })
+    .sort((first, second) => {
+      const statusDifference = followUpStatusPriority[first.status] - followUpStatusPriority[second.status];
+      return statusDifference !== 0 ? statusDifference : first.date.localeCompare(second.date);
+    });
 
   const getStatusBadgeVariant = (status: FollowUpStatus) => {
     switch (status) {
