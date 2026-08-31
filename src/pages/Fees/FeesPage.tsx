@@ -23,6 +23,7 @@ export const FeesPage: React.FC = () => {
   const [selectedFee, setSelectedFee] = useState<FeeRecord | null>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
 
   const [paymentForm, setPaymentForm] = useState({
     amount: 50000,
@@ -37,6 +38,7 @@ export const FeesPage: React.FC = () => {
 
   const handleOpenPaymentModal = (fee: FeeRecord) => {
     setSelectedFee(fee);
+    setPaymentError('');
     setPaymentForm({
       amount: Math.min(50000, fee.pending),
       method: 'Bank Transfer',
@@ -47,9 +49,20 @@ export const FeesPage: React.FC = () => {
 
   const handleRecordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFee || paymentForm.amount <= 0) return;
+    if (!selectedFee) return;
+
+    if (!Number.isFinite(paymentForm.amount) || paymentForm.amount <= 0) {
+      setPaymentError('Enter a payment amount greater than zero.');
+      return;
+    }
+
+    if (paymentForm.amount > selectedFee.pending) {
+      setPaymentError(`Payment cannot exceed the outstanding balance of ${userProfile.currency}${selectedFee.pending.toLocaleString()}.`);
+      return;
+    }
 
     recordFeePayment(selectedFee.id, Number(paymentForm.amount), paymentForm.method, paymentForm.reference);
+    setPaymentError('');
     setIsPaymentModalOpen(false);
   };
 
@@ -209,11 +222,21 @@ export const FeesPage: React.FC = () => {
               <input
                 type="number"
                 required
+                min="1"
+                step="1"
                 max={selectedFee.pending}
                 value={paymentForm.amount}
-                onChange={(e) => setPaymentForm({ ...paymentForm, amount: Number(e.target.value) })}
+                onChange={(e) => {
+                  setPaymentError('');
+                  setPaymentForm({ ...paymentForm, amount: Number(e.target.value) });
+                }}
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-hidden"
               />
+              {paymentError && (
+                <p className="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400" role="alert">
+                  {paymentError}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
