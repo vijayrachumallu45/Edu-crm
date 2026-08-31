@@ -69,7 +69,7 @@ export const DashboardPage: React.FC = () => {
     return {
       name: course.code,
       fullName: course.name,
-      enquiries: count + Math.floor(Math.random() * 5 + 3) // ensure realistic chart heights
+      enquiries: count
     };
   });
 
