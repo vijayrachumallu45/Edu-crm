@@ -284,3 +284,4 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+// Enhanced dashboard metrics
